@@ -52,14 +52,15 @@ namespace Test_Server
             this.cogDisplay.Size = new System.Drawing.Size(816, 531);
             this.cogDisplay.TabIndex = 0;
             // 
-            // Form1
+            // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1127, 555);
             this.Controls.Add(this.cogDisplay);
-            this.Name = "Form1";
+            this.Name = "FrmMain";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.FrmMain_Load);
             ((System.ComponentModel.ISupportInitialize)(this.cogDisplay)).EndInit();
             this.ResumeLayout(false);
 

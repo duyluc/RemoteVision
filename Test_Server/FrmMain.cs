@@ -18,15 +18,20 @@ namespace Test_Server
         public FrmMain()
         {
             InitializeComponent();
+        }
+
+        private void FrmMain_Load(object sender, EventArgs e)
+        {
             using (Socket Listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
                 IPEndPoint ServerEP = new IPEndPoint(IPAddress.Parse("192.168.0.62"), 9999);
                 Listener.Bind(ServerEP);
+                Listener.Listen(10);
                 Socket client = Listener.Accept();
                 int datalength = client.Available;
                 byte[] data = new byte[datalength];
                 int receivecount = client.Receive(data);
-                if(datalength != receivecount)
+                if (datalength != receivecount)
                 {
                     MessageBox.Show("Read Error!");
                 }
