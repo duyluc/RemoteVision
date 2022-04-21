@@ -46,6 +46,10 @@ namespace TestProvider
                         // Here, we let pylon correct the value if needed.
                         camera.Parameters[PLCamera.Width].SetValue(500, IntegerValueCorrection.Nearest);
                         camera.Parameters[PLCamera.Height].SetValue(500, IntegerValueCorrection.Nearest);
+                        camera.Parameters[PLCamEmuCamera.ExposureTimeAbs].SetValue(35000);
+                        camera.Parameters[PLCamera.PixelFormat].TrySetValue(PLCamera.PixelFormat.Mono8);
+
+
 
                         Console.WriteLine("OffsetX          : {0}", camera.Parameters[PLCamera.OffsetX].GetValue());
                         Console.WriteLine("OffsetY          : {0}", camera.Parameters[PLCamera.OffsetY].GetValue());
@@ -58,7 +62,7 @@ namespace TestProvider
                         Console.WriteLine("Old PixelFormat  : {0} ({1})", camera.Parameters[PLCamera.PixelFormat].GetValue(), oldPixelFormat);
 
                         // Set pixel format to Mono8 if available.
-                        if (camera.Parameters[PLCamera.PixelFormat].TrySetValue(PLCamera.PixelFormat.Mono8))
+                        if (camera.Parameters[PLCamera.PixelFormat].TrySetValue(PLCamera.PixelFormat.Mono16))
                         {
                             Console.WriteLine("New PixelFormat  : {0} ({1})", camera.Parameters[PLCamera.PixelFormat].GetValue(), oldPixelFormat);
                         }
@@ -81,6 +85,7 @@ namespace TestProvider
                                 // Image grabbed successfully?
                                 if (grabResult.GrabSucceeded)
                                 {
+                                    ImageWindow.DisplayImage(0, grabResult);
                                     IPEndPoint ServerEP = new IPEndPoint(IPAddress.Parse("192.168.0.62"), 9999);
                                     byte[] buffer = grabResult.PixelData as byte[];
                                     Socket sender = new Socket(SocketType.Stream, ProtocolType.Tcp);
