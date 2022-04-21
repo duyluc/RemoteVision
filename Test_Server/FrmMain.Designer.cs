@@ -61,6 +61,7 @@ namespace Test_Server
             this.Name = "FrmMain";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.FrmMain_Load);
+            this.Shown += new System.EventHandler(this.FrmMain_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.cogDisplay)).EndInit();
             this.ResumeLayout(false);
 

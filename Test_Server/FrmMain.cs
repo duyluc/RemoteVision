@@ -22,6 +22,11 @@ namespace Test_Server
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
+            
+        }
+
+        private void FrmMain_Shown(object sender, EventArgs e)
+        {
             using (Socket Listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
                 IPEndPoint ServerEP = new IPEndPoint(IPAddress.Parse("192.168.0.62"), 9999);
