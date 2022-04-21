@@ -32,6 +32,7 @@ namespace Test_Server
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.cogDisplay = new Cognex.VisionPro.Display.CogDisplay();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.cogDisplay)).BeginInit();
             this.SuspendLayout();
             // 
@@ -52,11 +53,22 @@ namespace Test_Server
             this.cogDisplay.Size = new System.Drawing.Size(816, 531);
             this.cogDisplay.TabIndex = 0;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(932, 66);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 64);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1127, 555);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.cogDisplay);
             this.Name = "FrmMain";
             this.Text = "Form1";
@@ -70,6 +82,7 @@ namespace Test_Server
         #endregion
 
         private Cognex.VisionPro.Display.CogDisplay cogDisplay;
+        private System.Windows.Forms.Button button1;
     }
 }
 

@@ -69,7 +69,7 @@ namespace TestProvider
                     // Start grabbing.
                     camera.StreamGrabber.Start();
                     // Grab a number of images.
-                    for (int i = 0; i < 10; ++i)
+                    while (true)
                     {
                         // Wait for an image and then retrieve it. A timeout of 5000 ms is used.
                         IGrabResult grabResult = camera.StreamGrabber.RetrieveResult(5000, TimeoutHandling.ThrowException);
@@ -79,22 +79,23 @@ namespace TestProvider
                             // Image grabbed successfully?
                             if (grabResult.GrabSucceeded)
                             {
-                                IPEndPoint ServerEP = new IPEndPoint(IPAddress.Parse("192.168.0.68"), 9999);
+                                IPEndPoint ServerEP = new IPEndPoint(IPAddress.Parse("192.168.0.62"), 9999);
                                 byte[] buffer = grabResult.PixelData as byte[];
-                                using (Socket sender = new Socket(SocketType.Stream, ProtocolType.Udp))
-                                {
-                                    sender.Connect(ServerEP);
-                                    Console.WriteLine(">> Connect Successfully");
-                                    sender.Send(buffer);
-                                    Console.WriteLine(">> Send Successfully");
-                                    sender.Close();
-                                    Console.WriteLine(">> Close Successfully");
-
-                                }
+                                Socket sender = new Socket(SocketType.Stream, ProtocolType.Tcp);
+                                sender.Connect(ServerEP);
+                                Console.WriteLine(">> Connect Successfully");
+                                sender.Send(buffer);
+                                Console.WriteLine(">> Send Successfully");
+                                sender.Close();
+                                Console.WriteLine(">> Close Successfully");
                             }
                             else
                             {
                                 Console.WriteLine("Error: {0} {1}", grabResult.ErrorCode, grabResult.ErrorDescription);
+                            }
+                            if(Console.ReadLine() == "exit")
+                            {
+                                break;
                             }
                         }
                     }
