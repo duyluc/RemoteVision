@@ -5,10 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Basler.Pylon;
 using System.Runtime.InteropServices;
+using System.Net;
+using System.Net.Sockets;
 
 namespace TestProvider
 {
-    class Program
+    class ClientVision
     {
 
         public class TestBasler
@@ -16,6 +18,7 @@ namespace TestProvider
             List<ICameraInfo> allCameras = null; //Create a list of ICameraInfo objects, used to save all camera information traversed 
             Camera camera = null; //Create a camera object 
             bool grabbing = false;
+            
             public TestBasler()
             {
                 using(camera = new Camera())
@@ -65,7 +68,6 @@ namespace TestProvider
 
                     // Start grabbing.
                     camera.StreamGrabber.Start();
-                    camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
                     // Grab a number of images.
                     for (int i = 0; i < 10; ++i)
                     {
@@ -77,14 +79,18 @@ namespace TestProvider
                             // Image grabbed successfully?
                             if (grabResult.GrabSucceeded)
                             {
-                                // Access the image data.
-                                Console.WriteLine("SizeX: {0}", grabResult.Width);
-                                Console.WriteLine("SizeY: {0}", grabResult.Height);
+                                IPEndPoint ServerEP = new IPEndPoint(IPAddress.Parse("192.168.0.68"), 9999);
                                 byte[] buffer = grabResult.PixelData as byte[];
-                                Console.WriteLine("Gray value of first pixel: {0}", buffer[0]);
-                                Console.ReadKey();
-                                Console.WriteLine("");
-                                ImageWindow.DisplayImage(0, grabResult);
+                                using (Socket sender = new Socket(SocketType.Stream, ProtocolType.Udp))
+                                {
+                                    sender.Connect(ServerEP);
+                                    Console.WriteLine(">> Connect Successfully");
+                                    sender.Send(buffer);
+                                    Console.WriteLine(">> Send Successfully");
+                                    sender.Close();
+                                    Console.WriteLine(">> Close Successfully");
+
+                                }
                             }
                             else
                             {
@@ -97,11 +103,6 @@ namespace TestProvider
                     camera.StreamGrabber.Stop();
                     camera.Close();
                 }
-            }
-
-            private void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
-            {
-                Console.WriteLine("Say hello");
             }
         }
 
