@@ -28,7 +28,7 @@ namespace Test_Server
 
         private void FrmMain_Shown(object sender, EventArgs e)
         {
-            
+            Task _ = Receive();
         }
 
         public async Task Receive()
