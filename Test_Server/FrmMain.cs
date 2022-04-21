@@ -63,9 +63,9 @@ namespace Test_Server
                         }
                     }
                 }
-                catch
+                catch(Exception e)
                 {
-
+                    Console.WriteLine(e.Message);
                 }
             });
             _.Start();
