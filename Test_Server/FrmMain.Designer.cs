@@ -50,12 +50,12 @@ namespace Test_Server
             this.cogDisplay.MouseWheelSensitivity = 1D;
             this.cogDisplay.Name = "cogDisplay";
             this.cogDisplay.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("cogDisplay.OcxState")));
-            this.cogDisplay.Size = new System.Drawing.Size(816, 531);
+            this.cogDisplay.Size = new System.Drawing.Size(722, 455);
             this.cogDisplay.TabIndex = 0;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(932, 66);
+            this.button1.Location = new System.Drawing.Point(1040, 55);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 64);
             this.button1.TabIndex = 1;
