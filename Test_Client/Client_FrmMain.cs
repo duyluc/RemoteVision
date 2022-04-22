@@ -82,7 +82,6 @@ namespace Test_Client
                         {
                             try
                             {
-
                                 this.TcpSender = new Socket(SocketType.Stream, ProtocolType.Tcp);
                                 if (!ConnectServer())
                                 {
@@ -111,9 +110,12 @@ namespace Test_Client
                                         if(reply != null)
                                         {
                                             byte[] data = ImageShipper.ObjectToByteArray(imageshipper);
+                                            List<byte[]> cutdata = this.CutData(data);
                                             this.RaiseMessage($"Data Length: {data.Length}");
-                                            this.TcpSender.SendTimeout = -1;
-                                            this.TcpSender.Send(data);
+                                            for (int i = 0; i <= cutdata.Count; i++)
+                                            {
+                                                this.TcpSender.Send(cutdata[i]);
+                                            }
                                             this.RaiseMessage("Send Image Successfuly!");
                                             this.RaiseMessage("------------------------------------ <<");
                                         }
