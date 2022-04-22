@@ -7,6 +7,8 @@ using Basler.Pylon;
 using System.Runtime.InteropServices;
 using System.Net;
 using System.Net.Sockets;
+using RemoteSupport;
+using System.Drawing;
 
 namespace TestProvider
 {
@@ -23,8 +25,10 @@ namespace TestProvider
             {
                 using(camera = new Camera())
                 {
+                    Socket sender = null;
                     try
                     {
+                        camera.Close();
                         camera.Open();
 
                         // DeviceVendorName, DeviceModelName, and DeviceFirmwareVersion are string parameters.
@@ -47,7 +51,7 @@ namespace TestProvider
                         camera.Parameters[PLCamera.Width].SetValue(500, IntegerValueCorrection.Nearest);
                         camera.Parameters[PLCamera.Height].SetValue(500, IntegerValueCorrection.Nearest);
                         camera.Parameters[PLCamEmuCamera.ExposureTimeAbs].SetValue(35000);
-                        camera.Parameters[PLCamera.PixelFormat].TrySetValue(PLCamera.PixelFormat.Mono8);
+                        camera.Parameters[PLCamera.PixelFormat].TrySetValue(PLCamera.PixelFormat.Mono16);
 
 
 
@@ -58,11 +62,12 @@ namespace TestProvider
 
 
                         // Set an enum parameter.
+
                         string oldPixelFormat = camera.Parameters[PLCamera.PixelFormat].GetValue(); // Remember the current pixel format.
                         Console.WriteLine("Old PixelFormat  : {0} ({1})", camera.Parameters[PLCamera.PixelFormat].GetValue(), oldPixelFormat);
 
                         // Set pixel format to Mono8 if available.
-                        if (camera.Parameters[PLCamera.PixelFormat].TrySetValue(PLCamera.PixelFormat.Mono16))
+                        if (camera.Parameters[PLCamera.PixelFormat].TrySetValue(PLCamera.PixelFormat.Mono8))
                         {
                             Console.WriteLine("New PixelFormat  : {0} ({1})", camera.Parameters[PLCamera.PixelFormat].GetValue(), oldPixelFormat);
                         }
@@ -70,40 +75,52 @@ namespace TestProvider
 
                         // Some camera models may have auto functions enabled. To set the gain value to a specific value,
                         // the Gain Auto function must be disabled first (if gain auto is available).
-                        camera.Parameters[PLCamera.GainAuto].TrySetValue(PLCamera.GainAuto.Off); // Set GainAuto to Off if it is writable.
+                        // Set GainAuto to Off if it is writable.
 
                         // Start grabbing.
-                        camera.StreamGrabber.Start();
                         // Grab a number of images.
+                        IPEndPoint ServerEP = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9999);
+                        sender = new Socket(SocketType.Stream, ProtocolType.Tcp);
+                        sender.Connect(ServerEP);
                         while (true)
                         {
                             // Wait for an image and then retrieve it. A timeout of 5000 ms is used.
-                            IGrabResult grabResult = camera.StreamGrabber.RetrieveResult(5000, TimeoutHandling.ThrowException);
-                            using (grabResult)
+                            try
                             {
-
-                                // Image grabbed successfully?
-                                if (grabResult.GrabSucceeded)
+                                camera.Parameters[PLCamera.GainAuto].TrySetValue(PLCamera.GainAuto.Off);
+                                IGrabResult grabResult = camera.StreamGrabber.RetrieveResult(5000, TimeoutHandling.ThrowException);
+                                using (grabResult)
                                 {
-                                    ImageWindow.DisplayImage(0, grabResult);
-                                    IPEndPoint ServerEP = new IPEndPoint(IPAddress.Parse("192.168.0.62"), 9999);
-                                    byte[] buffer = grabResult.PixelData as byte[];
-                                    Socket sender = new Socket(SocketType.Stream, ProtocolType.Tcp);
-                                    sender.Connect(ServerEP);
-                                    Console.WriteLine(">> Connect Successfully");
-                                    sender.Send(buffer);
-                                    Console.WriteLine(">> Send Successfully");
-                                    sender.Close();
-                                    Console.WriteLine(">> Close Successfully");
+                                    ImageShipper imageShipper = new ImageShipper(grabResult, "0x00", "xxx");
+                                    // Image grabbed successfully?
+                                    if (grabResult.GrabSucceeded)
+                                    {
+                                        ImageWindow.DisplayImage(0, grabResult);
+                                        byte[] data = ImageShipper.ObjectToByteArray(imageShipper);
+                                        Console.WriteLine(">> DataLength: " + data.Length.ToString());
+                                        Console.WriteLine(">> Connect Successfully");
+                                        sender.Send(data);
+                                        Console.WriteLine(">> Send Successfully");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Error: {0} {1}", grabResult.ErrorCode, grabResult.ErrorDescription);
+                                    }
+                                    if (Console.ReadLine() == "exit")
+                                    {
+                                        break;
+                                    }
+                                    camera.StreamGrabber.Stop();
                                 }
-                                else
-                                {
-                                    Console.WriteLine("Error: {0} {1}", grabResult.ErrorCode, grabResult.ErrorDescription);
-                                }
-                                if (Console.ReadLine() == "exit")
-                                {
-                                    break;
-                                }
+                                
+                            }
+                            catch(Exception e)
+                            {
+                                Console.WriteLine(e.Message);
+                            }
+                            finally
+                            {
+                                camera.StreamGrabber.Stop();
                             }
                         }
                     }
@@ -113,9 +130,8 @@ namespace TestProvider
                     }
                     finally
                     {
-
-                        camera.StreamGrabber.Stop();
                         camera.Close();
+                        sender.Close();
                     }
                 }
             }

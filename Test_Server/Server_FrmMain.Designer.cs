@@ -1,7 +1,7 @@
 ﻿
 namespace Test_Server
 {
-    partial class FrmMain
+    partial class Server_FrmMain
     {
         /// <summary>
         /// Required designer variable.
@@ -30,9 +30,10 @@ namespace Test_Server
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Server_FrmMain));
             this.cogDisplay = new Cognex.VisionPro.Display.CogDisplay();
-            this.button1 = new System.Windows.Forms.Button();
+            this.tbxMessage = new System.Windows.Forms.TextBox();
+            this.btnClear = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.cogDisplay)).BeginInit();
             this.SuspendLayout();
             // 
@@ -50,39 +51,52 @@ namespace Test_Server
             this.cogDisplay.MouseWheelSensitivity = 1D;
             this.cogDisplay.Name = "cogDisplay";
             this.cogDisplay.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("cogDisplay.OcxState")));
-            this.cogDisplay.Size = new System.Drawing.Size(722, 455);
+            this.cogDisplay.Size = new System.Drawing.Size(730, 700);
             this.cogDisplay.TabIndex = 0;
             // 
-            // button1
+            // tbxMessage
             // 
-            this.button1.Location = new System.Drawing.Point(1040, 55);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 64);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.tbxMessage.Location = new System.Drawing.Point(1116, 12);
+            this.tbxMessage.Multiline = true;
+            this.tbxMessage.Name = "tbxMessage";
+            this.tbxMessage.ReadOnly = true;
+            this.tbxMessage.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.tbxMessage.Size = new System.Drawing.Size(586, 186);
+            this.tbxMessage.TabIndex = 1;
             // 
-            // FrmMain
+            // btnClear
+            // 
+            this.btnClear.Location = new System.Drawing.Point(1116, 204);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(105, 43);
+            this.btnClear.TabIndex = 2;
+            this.btnClear.Text = "Clear";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            // 
+            // Server_FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1127, 555);
-            this.Controls.Add(this.button1);
+            this.ClientSize = new System.Drawing.Size(1714, 850);
+            this.Controls.Add(this.btnClear);
+            this.Controls.Add(this.tbxMessage);
             this.Controls.Add(this.cogDisplay);
-            this.Name = "FrmMain";
-            this.Text = "Form1";
+            this.Name = "Server_FrmMain";
+            this.Text = "SERVER";
             this.Load += new System.EventHandler(this.FrmMain_Load);
             this.Shown += new System.EventHandler(this.FrmMain_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.cogDisplay)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
         private Cognex.VisionPro.Display.CogDisplay cogDisplay;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox tbxMessage;
+        private System.Windows.Forms.Button btnClear;
     }
 }
 
