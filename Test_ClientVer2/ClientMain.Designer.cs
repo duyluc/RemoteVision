@@ -29,6 +29,7 @@ namespace Test_ClientVer2
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ClientMain));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.Display = new System.Windows.Forms.PictureBox();
@@ -41,15 +42,18 @@ namespace Test_ClientVer2
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.lvCameras = new System.Windows.Forms.ListView();
             this.btnRefreshLV = new System.Windows.Forms.Button();
+            this.lvCameras = new System.Windows.Forms.ListView();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.cbImageFormat = new PylonController.EnumerationComboBoxUserControl();
-            this.slExposure = new PylonController.FloatSliderUserControl();
-            this.slGain = new PylonController.FloatSliderUserControl();
-            this.slWidth = new PylonController.IntSliderUserControl();
-            this.slHeight = new PylonController.IntSliderUserControl();
             this.btnCapture = new System.Windows.Forms.Button();
+            this.slHeight = new PylonController.IntSliderUserControl();
+            this.slWidth = new PylonController.IntSliderUserControl();
+            this.slGain = new PylonController.FloatSliderUserControl();
+            this.slExposure = new PylonController.FloatSliderUserControl();
+            this.cbImageFormat = new PylonController.EnumerationComboBoxUserControl();
+            this.lbTactTime = new System.Windows.Forms.StatusStrip();
+            this.lbTactTimer = new System.Windows.Forms.ToolStripStatusLabel();
+            this.cogDisplay = new Cognex.VisionPro.Display.CogDisplay();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Display)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
@@ -57,15 +61,19 @@ namespace Test_ClientVer2
             this.statusStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
+            this.lbTactTime.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cogDisplay)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 300F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 574F));
             this.tableLayoutPanel1.Controls.Add(this.Display, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.cogDisplay, 2, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -79,7 +87,7 @@ namespace Test_ClientVer2
             this.Display.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Display.Location = new System.Drawing.Point(303, 3);
             this.Display.Name = "Display";
-            this.Display.Size = new System.Drawing.Size(1005, 806);
+            this.Display.Size = new System.Drawing.Size(431, 806);
             this.Display.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.Display.TabIndex = 0;
             this.Display.TabStop = false;
@@ -182,17 +190,6 @@ namespace Test_ClientVer2
             this.panel2.Size = new System.Drawing.Size(288, 201);
             this.panel2.TabIndex = 1;
             // 
-            // lvCameras
-            // 
-            this.lvCameras.HideSelection = false;
-            this.lvCameras.Location = new System.Drawing.Point(0, 3);
-            this.lvCameras.Name = "lvCameras";
-            this.lvCameras.Size = new System.Drawing.Size(288, 195);
-            this.lvCameras.TabIndex = 2;
-            this.lvCameras.UseCompatibleStateImageBehavior = false;
-            this.lvCameras.View = System.Windows.Forms.View.Tile;
-            this.lvCameras.SelectedIndexChanged += new System.EventHandler(this.lvCameras_SelectedIndexChanged);
-            // 
             // btnRefreshLV
             // 
             this.btnRefreshLV.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnRefreshLV.BackgroundImage")));
@@ -204,9 +201,21 @@ namespace Test_ClientVer2
             this.btnRefreshLV.UseVisualStyleBackColor = true;
             this.btnRefreshLV.Click += new System.EventHandler(this.btnRefreshLV_Click);
             // 
+            // lvCameras
+            // 
+            this.lvCameras.HideSelection = false;
+            this.lvCameras.Location = new System.Drawing.Point(0, 3);
+            this.lvCameras.Name = "lvCameras";
+            this.lvCameras.Size = new System.Drawing.Size(288, 195);
+            this.lvCameras.TabIndex = 2;
+            this.lvCameras.UseCompatibleStateImageBehavior = false;
+            this.lvCameras.View = System.Windows.Forms.View.Tile;
+            this.lvCameras.SelectedIndexChanged += new System.EventHandler(this.lvCameras_SelectedIndexChanged);
+            // 
             // panel3
             // 
             this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel3.Controls.Add(this.lbTactTime);
             this.panel3.Controls.Add(this.btnCapture);
             this.panel3.Controls.Add(this.slHeight);
             this.panel3.Controls.Add(this.slWidth);
@@ -219,40 +228,17 @@ namespace Test_ClientVer2
             this.panel3.Size = new System.Drawing.Size(288, 472);
             this.panel3.TabIndex = 2;
             // 
-            // cbImageFormat
+            // btnCapture
             // 
-            this.cbImageFormat.DefaultName = "N/A";
-            this.cbImageFormat.Location = new System.Drawing.Point(21, 3);
-            this.cbImageFormat.Name = "cbImageFormat";
-            this.cbImageFormat.Size = new System.Drawing.Size(251, 57);
-            this.cbImageFormat.TabIndex = 0;
-            // 
-            // slExposure
-            // 
-            this.slExposure.DefaultName = "N/A";
-            this.slExposure.Location = new System.Drawing.Point(21, 86);
-            this.slExposure.MinimumSize = new System.Drawing.Size(245, 50);
-            this.slExposure.Name = "slExposure";
-            this.slExposure.Size = new System.Drawing.Size(251, 50);
-            this.slExposure.TabIndex = 1;
-            // 
-            // slGain
-            // 
-            this.slGain.DefaultName = "N/A";
-            this.slGain.Location = new System.Drawing.Point(21, 146);
-            this.slGain.MinimumSize = new System.Drawing.Size(245, 50);
-            this.slGain.Name = "slGain";
-            this.slGain.Size = new System.Drawing.Size(251, 50);
-            this.slGain.TabIndex = 2;
-            // 
-            // slWidth
-            // 
-            this.slWidth.DefaultName = "N/A";
-            this.slWidth.Location = new System.Drawing.Point(21, 206);
-            this.slWidth.MinimumSize = new System.Drawing.Size(245, 50);
-            this.slWidth.Name = "slWidth";
-            this.slWidth.Size = new System.Drawing.Size(245, 50);
-            this.slWidth.TabIndex = 3;
+            this.btnCapture.BackColor = System.Drawing.Color.Transparent;
+            this.btnCapture.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnCapture.BackgroundImage")));
+            this.btnCapture.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnCapture.Location = new System.Drawing.Point(230, 404);
+            this.btnCapture.Name = "btnCapture";
+            this.btnCapture.Size = new System.Drawing.Size(51, 39);
+            this.btnCapture.TabIndex = 5;
+            this.btnCapture.UseVisualStyleBackColor = false;
+            this.btnCapture.Click += new System.EventHandler(this.btnCapture_Click);
             // 
             // slHeight
             // 
@@ -263,17 +249,74 @@ namespace Test_ClientVer2
             this.slHeight.Size = new System.Drawing.Size(245, 50);
             this.slHeight.TabIndex = 4;
             // 
-            // btnCapture
+            // slWidth
             // 
-            this.btnCapture.BackColor = System.Drawing.Color.Transparent;
-            this.btnCapture.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnCapture.BackgroundImage")));
-            this.btnCapture.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnCapture.Location = new System.Drawing.Point(221, 425);
-            this.btnCapture.Name = "btnCapture";
-            this.btnCapture.Size = new System.Drawing.Size(51, 39);
-            this.btnCapture.TabIndex = 5;
-            this.btnCapture.UseVisualStyleBackColor = false;
-            this.btnCapture.Click += new System.EventHandler(this.btnCapture_Click);
+            this.slWidth.DefaultName = "N/A";
+            this.slWidth.Location = new System.Drawing.Point(21, 206);
+            this.slWidth.MinimumSize = new System.Drawing.Size(245, 50);
+            this.slWidth.Name = "slWidth";
+            this.slWidth.Size = new System.Drawing.Size(245, 50);
+            this.slWidth.TabIndex = 3;
+            // 
+            // slGain
+            // 
+            this.slGain.DefaultName = "N/A";
+            this.slGain.Location = new System.Drawing.Point(21, 146);
+            this.slGain.MinimumSize = new System.Drawing.Size(245, 50);
+            this.slGain.Name = "slGain";
+            this.slGain.Size = new System.Drawing.Size(251, 50);
+            this.slGain.TabIndex = 2;
+            // 
+            // slExposure
+            // 
+            this.slExposure.DefaultName = "N/A";
+            this.slExposure.Location = new System.Drawing.Point(21, 86);
+            this.slExposure.MinimumSize = new System.Drawing.Size(245, 50);
+            this.slExposure.Name = "slExposure";
+            this.slExposure.Size = new System.Drawing.Size(251, 50);
+            this.slExposure.TabIndex = 1;
+            // 
+            // cbImageFormat
+            // 
+            this.cbImageFormat.DefaultName = "N/A";
+            this.cbImageFormat.Location = new System.Drawing.Point(21, 3);
+            this.cbImageFormat.Name = "cbImageFormat";
+            this.cbImageFormat.Size = new System.Drawing.Size(251, 57);
+            this.cbImageFormat.TabIndex = 0;
+            // 
+            // lbTactTime
+            // 
+            this.lbTactTime.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.lbTactTimer});
+            this.lbTactTime.Location = new System.Drawing.Point(0, 446);
+            this.lbTactTime.Name = "lbTactTime";
+            this.lbTactTime.Size = new System.Drawing.Size(284, 22);
+            this.lbTactTime.TabIndex = 6;
+            this.lbTactTime.Text = "Timer: 0 ms";
+            // 
+            // lbTactTimer
+            // 
+            this.lbTactTimer.Name = "lbTactTimer";
+            this.lbTactTimer.Size = new System.Drawing.Size(68, 17);
+            this.lbTactTimer.Text = "Timer: 0 ms";
+            // 
+            // cogDisplay
+            // 
+            this.cogDisplay.ColorMapLowerClipColor = System.Drawing.Color.Black;
+            this.cogDisplay.ColorMapLowerRoiLimit = 0D;
+            this.cogDisplay.ColorMapPredefined = Cognex.VisionPro.Display.CogDisplayColorMapPredefinedConstants.None;
+            this.cogDisplay.ColorMapUpperClipColor = System.Drawing.Color.Black;
+            this.cogDisplay.ColorMapUpperRoiLimit = 1D;
+            this.cogDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cogDisplay.DoubleTapZoomCycleLength = 2;
+            this.cogDisplay.DoubleTapZoomSensitivity = 2.5D;
+            this.cogDisplay.Location = new System.Drawing.Point(740, 3);
+            this.cogDisplay.MouseWheelMode = Cognex.VisionPro.Display.CogDisplayMouseWheelModeConstants.Zoom1;
+            this.cogDisplay.MouseWheelSensitivity = 1D;
+            this.cogDisplay.Name = "cogDisplay";
+            this.cogDisplay.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("cogDisplay.OcxState")));
+            this.cogDisplay.Size = new System.Drawing.Size(568, 806);
+            this.cogDisplay.TabIndex = 2;
             // 
             // ClientMain
             // 
@@ -292,6 +335,10 @@ namespace Test_ClientVer2
             this.statusStrip1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
+            this.lbTactTime.ResumeLayout(false);
+            this.lbTactTime.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cogDisplay)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -318,6 +365,9 @@ namespace Test_ClientVer2
         private PylonController.IntSliderUserControl slHeight;
         private PylonController.IntSliderUserControl slWidth;
         private System.Windows.Forms.Button btnCapture;
+        private System.Windows.Forms.StatusStrip lbTactTime;
+        private System.Windows.Forms.ToolStripStatusLabel lbTactTimer;
+        private Cognex.VisionPro.Display.CogDisplay cogDisplay;
     }
 }
 

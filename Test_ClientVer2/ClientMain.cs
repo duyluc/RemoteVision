@@ -9,16 +9,23 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using RemoteSupport;
 using Basler.Pylon;
+using System.Diagnostics;
 
 namespace Test_ClientVer2
 {
     public partial class ClientMain : Form
     {
         private Camera mCamera { get; set; }
+        private string UnitId { get; set; }
+        private string SerialNumber { get; set; }
+        private Shipper mShipper { get; set; }
+        private Terminal OutputImage { get; set; }
+        private Stopwatch StopWatch { get; set; }
 
         public ClientMain()
         {
             InitializeComponent();
+            this.UnitId = "0x01";
             this.cbImageFormat.DefaultName = "Image Format";
             this.slExposure.DefaultName = "Exposure";
             this.slGain.DefaultName = "Gain";
@@ -26,7 +33,11 @@ namespace Test_ClientVer2
             this.slHeight.DefaultName = "Height";
             UpdateDevice();
             this.FormClosing += ClientMain_FormClosing;
-
+            this.mShipper = new Shipper();
+            OutputImage = new Terminal("OutputImage");
+            this.mShipper.AddTerminal(OutputImage);
+            this.EnableButton(false);
+            this.StopWatch = new Stopwatch();
         }
 
         private void ClientMain_FormClosing(object sender, FormClosingEventArgs e)
@@ -40,13 +51,13 @@ namespace Test_ClientVer2
             {
                 List<ICameraInfo> _listCameraInfo = PylonCamera.FindCameras();
                 ListView.ListViewItemCollection items = this.lvCameras.Items;
-                foreach(ICameraInfo camerainfo in _listCameraInfo)
+                foreach (ICameraInfo camerainfo in _listCameraInfo)
                 {
                     bool newitem = true;
-                    foreach(ListViewItem item in items)
+                    foreach (ListViewItem item in items)
                     {
                         ICameraInfo tag = item.Tag as ICameraInfo;
-                        if(tag[CameraInfoKey.FullName] == camerainfo[CameraInfoKey.FullName])
+                        if (tag[CameraInfoKey.FullName] == camerainfo[CameraInfoKey.FullName])
                         {
                             tag = camerainfo;
                             newitem = false;
@@ -62,12 +73,13 @@ namespace Test_ClientVer2
                     }
                 }
 
-                foreach(ListViewItem item in items)
+                foreach (ListViewItem item in items)
                 {
                     bool exists = false;
-                    foreach(ICameraInfo camerainfor in _listCameraInfo)
+                    foreach (ICameraInfo camerainfor in _listCameraInfo)
                     {
-                        if(((ICameraInfo)item.Tag)[CameraInfoKey.FullName] == camerainfor[CameraInfoKey.FullName]){
+                        if (((ICameraInfo)item.Tag)[CameraInfoKey.FullName] == camerainfor[CameraInfoKey.FullName])
+                        {
                             exists = true;
                             break;
                         }
@@ -78,10 +90,15 @@ namespace Test_ClientVer2
                     }
                 }
             }
-            catch(Exception t)
+            catch (Exception t)
             {
-                
+
             }
+        }
+
+        public void EnableButton(bool enable = true)
+        {
+            this.btnCapture.Enabled = enable;
         }
 
         private void btnRefreshLV_Click(object sender, EventArgs e)
@@ -92,12 +109,12 @@ namespace Test_ClientVer2
         private void lvCameras_SelectedIndexChanged(object sender, EventArgs e)
         {
             int index = this.lvCameras.SelectedItems.Count;
-            if(this.mCamera != null)
+            if (this.mCamera != null)
             {
                 this.DestroyCamera();
             }
 
-            if(index > 0)
+            if (index > 0)
             {
                 ListViewItem item = this.lvCameras.SelectedItems[0];
                 ICameraInfo _selectedCamera = item.Tag as ICameraInfo;
@@ -133,8 +150,10 @@ namespace Test_ClientVer2
                         this.slGain.Parameter = mCamera.Parameters[PLCamera.Gain];
                     }
 
+                    this.SerialNumber = _selectedCamera[CameraInfoKey.SerialNumber];
+
                 }
-                catch(Exception t)
+                catch (Exception t)
                 {
                     this.ShowException(t);
                 }
@@ -150,6 +169,7 @@ namespace Test_ClientVer2
                 return;
             }
 
+            this.EnableButton(true);
             //// Reset the stopwatch.
             //stopWatch.Reset();
 
@@ -180,11 +200,16 @@ namespace Test_ClientVer2
                 IGrabResult grabResult = e.GrabResult;
                 if (grabResult.GrabSucceeded)
                 {
-                    LImage outputimage = new LImage(grabResult, "0x00", "0x00");
+                    LImage outputimage = new LImage(grabResult, this.UnitId, this.SerialNumber);
+                    this.OutputImage.SetValue(outputimage);
                     this.Display.Image = outputimage.BitmapImage;
+                    Cognex.VisionPro.CogImage8Grey cogimg = new Cognex.VisionPro.CogImage8Grey(outputimage.BitmapImage);
+                    this.cogDisplay.Image = cogimg;
                 }
+                this.StopWatch.Stop();
+                this.ShowStopWatchTime();
             }
-            catch(Exception t)
+            catch (Exception t)
             {
                 this.ShowException(t);
             }
@@ -198,7 +223,7 @@ namespace Test_ClientVer2
                 BeginInvoke(new EventHandler<EventArgs>(StreamGrabber_GrabStarted), sender, e);
                 return;
             }
-
+            this.EnableButton(false);
             // Reset the stopwatch used to reduce the amount of displayed images. The camera may acquire images faster than the images can be displayed.
 
             //stopWatch.Reset();
@@ -218,7 +243,7 @@ namespace Test_ClientVer2
                 BeginInvoke(new EventHandler<EventArgs>(MCamera_CameraClosed), sender, e);
                 return;
             }
-
+            this.EnableButton(false);
             // The camera connection is closed. Disable all buttons.
             //EnableButtons(false, false);
         }
@@ -233,7 +258,7 @@ namespace Test_ClientVer2
             }
 
             // The image provider is ready to grab. Enable the grab buttons.
-            //EnableButtons(true, false);
+            EnableButton(true);
         }
 
         private void MCamera_ConnectionLost(object sender, EventArgs e)
@@ -294,13 +319,25 @@ namespace Test_ClientVer2
         {
             try
             {
+                this.StartStopWatch();
                 Configuration.AcquireSingleFrame(mCamera, null);
                 mCamera.StreamGrabber.Start(1, GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
             }
-            catch(Exception t)
+            catch (Exception t)
             {
                 this.ShowException(t);
             }
+        }
+
+        public void StartStopWatch()
+        {
+            this.StopWatch.Reset();
+            this.StopWatch.Start();
+        }
+
+        public void ShowStopWatchTime()
+        {
+            this.lbTactTime.Invoke(new Action(() => { this.lbTactTimer.Text = $"Timer: {this.StopWatch.ElapsedMilliseconds} ms"; }));
         }
     }
 }

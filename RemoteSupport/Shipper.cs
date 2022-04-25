@@ -24,16 +24,19 @@ namespace RemoteSupport
 
         public Shipper(ServerInfo _serverInfo)
         {
+            this.Terminals = new Dictionary<string, Terminal>();
             this.ServerInfor = _serverInfo;
         }
 
         public Shipper(Dictionary<string,Terminal> terminals)
         {
+            this.Terminals = new Dictionary<string, Terminal>();
             this.Terminals = terminals;
         }
 
         public void AddTerminal(Terminal _terminal)
         {
+            this.Terminals = new Dictionary<string, Terminal>();
             Terminals.Add(_terminal.Name, _terminal);
         }
 
@@ -58,5 +61,6 @@ namespace RemoteSupport
             Shipper obj = binForm.Deserialize(memStream) as Shipper;
             return obj;
         }
+
     }
 }
