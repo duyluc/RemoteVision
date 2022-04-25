@@ -15,12 +15,15 @@ using Cognex.VisionPro;
 using System.Drawing.Imaging;
 using Basler.Pylon;
 using System.Threading;
+using System.IO;
 
 namespace Test_Server
 {
     public partial class Server_FrmMain : Form
     {
         static public bool run = false;
+        static public bool enableWaitdata = false;
+        static private int Buffersize = 9216;
         public Server_FrmMain()
         {
             InitializeComponent();
@@ -45,6 +48,8 @@ namespace Test_Server
                     this.tbxMessage.Text = "";
                 }
                 this.tbxMessage.Text = this.tbxMessage.Text + DateTime.Now.ToString(">> hh::mm::ss >>") + message + Environment.NewLine;
+                this.tbxMessage.SelectionStart = this.tbxMessage.Text.Length;
+                this.tbxMessage.ScrollToCaret();
             }));
         }
 
@@ -68,23 +73,63 @@ namespace Test_Server
                             this.RaiseMessage($"Connect to TCP!");
                             this.RaiseMessage($"Waiting for Data!");
                             int datalength = client.Available;
+                            enableWaitdata = true;
                             while (datalength == 0)
                             {
                                 Thread.Sleep(10);
                                 datalength = client.Available;
+                                if (!enableWaitdata) throw new Exception("Data Waiting is Aborted");
                             }
+                            byte[] _data = new byte[datalength];
+                            client.Receive(_data);
+                            datalength = BitConverter.ToInt32(_data, 0);
+                            byte[] assamplyData = new byte[datalength];
+                            int _countpocket = datalength / Buffersize;
+                            int _residual = datalength % Buffersize;
+                            _data = new byte[Buffersize];
                             this.RaiseMessage($"Data available: {datalength}");
-                            byte[] data = new byte[datalength];
-                            int receivecount = client.Receive(data);
-                            this.RaiseMessage($"Data Get: {receivecount}");
-                            if (datalength != receivecount)
+                            bool hasdata = true;
+                            int offset = 0;
+                            _data = new byte[datalength];
+                            while (hasdata)
+                            {
+
+                                bool _c = false;
+                                Thread _t = new Thread(() =>
+                                {
+
+                                    int read = client.Receive(_data, offset, _data.Length - offset, SocketFlags.None);
+                                    offset += read;
+                                    _c = true;
+                                    
+                                });
+                                int _count = 0;
+                                _t.Start();
+                                while (!_c && _count<50)
+                                {
+                                    Thread.Sleep(10);
+                                    _count++;
+                                }
+                                if (_count < 50)
+                                {
+                                    if (offset == _data.Length) break;
+                                }
+                                else
+                                {
+                                    if(_t.IsAlive) _t.Abort();
+                                    throw new Exception("Receive Timeout!");
+                                }
+                            }
+                            if (datalength != assamplyData.Length)
                             {
                                 this.RaiseMessage("Read Error!");
                             }
-                            ImageShipper imageShipper = ImageShipper.ByteArrayToObject(data) as ImageShipper;
+                            this.RaiseMessage($"Received: {offset} byte");
+                            Shipper imageShipper = Shipper.ByteArrayToObject(_data) as Shipper;
                             CogImage8Grey image = new CogImage8Grey(imageShipper.BitmapImage);
                             this.cogDisplay.Invoke(new Action(() => { this.cogDisplay.Image = image; }));
-                            this.RaiseMessage("OK!");
+                            this.RaiseMessage($"Device: {imageShipper.UnitID}" + Environment.NewLine + $"Camera: {imageShipper.CameraSerialNumber}");
+                            this.RaiseMessage("Receive Image Successfully!");
                         }
                         catch(Exception e)
                         {
@@ -103,7 +148,12 @@ namespace Test_Server
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-            this.cogDisplay = null;
+            this.cogDisplay.Image = null;
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            enableWaitdata = false;
         }
     }
 }

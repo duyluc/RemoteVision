@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_Server", "Test_Server\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_Client", "Test_Client\Test_Client.csproj", "{6308777E-6AEE-413B-BD85-CB489B828028}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_ClientVer2", "Test_ClientVer2\Test_ClientVer2.csproj", "{E5156C25-EB04-4ADF-A27D-7E0AD3107B47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,14 @@ Global
 		{6308777E-6AEE-413B-BD85-CB489B828028}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6308777E-6AEE-413B-BD85-CB489B828028}.Release|x64.ActiveCfg = Release|Any CPU
 		{6308777E-6AEE-413B-BD85-CB489B828028}.Release|x64.Build.0 = Release|Any CPU
+		{E5156C25-EB04-4ADF-A27D-7E0AD3107B47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5156C25-EB04-4ADF-A27D-7E0AD3107B47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5156C25-EB04-4ADF-A27D-7E0AD3107B47}.Debug|x64.ActiveCfg = Debug|x64
+		{E5156C25-EB04-4ADF-A27D-7E0AD3107B47}.Debug|x64.Build.0 = Debug|x64
+		{E5156C25-EB04-4ADF-A27D-7E0AD3107B47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5156C25-EB04-4ADF-A27D-7E0AD3107B47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5156C25-EB04-4ADF-A27D-7E0AD3107B47}.Release|x64.ActiveCfg = Release|Any CPU
+		{E5156C25-EB04-4ADF-A27D-7E0AD3107B47}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

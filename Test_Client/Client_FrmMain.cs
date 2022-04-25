@@ -13,6 +13,7 @@ using Basler.Pylon;
 using System.Threading;
 using RemoteSupport;
 using System.Net.NetworkInformation;
+using System.IO;
 
 namespace Test_Client
 {
@@ -37,6 +38,8 @@ namespace Test_Client
                     this.tbxMessage.Text = "";
                 }
                 this.tbxMessage.Text = this.tbxMessage.Text + DateTime.Now.ToString(">> hh::mm::ss >>") + message + Environment.NewLine;
+                this.tbxMessage.SelectionStart = this.tbxMessage.Text.Length;
+                this.tbxMessage.ScrollToCaret();
             }));
         }
 
@@ -103,28 +106,28 @@ namespace Test_Client
                                         {
                                             throw new Exception("TCPSender is not Connect!");
                                         }
-                                        ImageShipper imageshipper = new ImageShipper(grabResult, "0x00", "12345",System.Drawing.Imaging.PixelFormat.Format8bppIndexed,PixelType.Mono8);
-                                        this.Display.Image = imageshipper.BitmapImage;
-                                        Ping mping = new Ping();
-                                        PingReply reply = mping.Send(this.ServerAddress.ToString(), 1000);
-                                        if(reply != null)
+                                        Shipper imageshipper = new Shipper(grabResult, "0x00", "12345", System.Drawing.Imaging.PixelFormat.Format8bppIndexed, PixelType.Mono8);
+                                        this.Display.Invoke(new Action(() => 
                                         {
-                                            byte[] data = ImageShipper.ObjectToByteArray(imageshipper);
-                                            List<byte[]> cutdata = this.CutData(data);
-                                            this.RaiseMessage($"Data Length: {data.Length}");
-                                            for (int i = 0; i <= cutdata.Count; i++)
-                                            {
-                                                this.TcpSender.Send(cutdata[i]);
-                                            }
-                                            this.RaiseMessage("Send Image Successfuly!");
-                                            this.RaiseMessage("------------------------------------ <<");
+                                            this.Display.Image = imageshipper.BitmapImage.Clone() as Bitmap;
+                                        }));
+                                        byte[] data = Shipper.ObjectToByteArray(imageshipper);
+                                        this.RaiseMessage($"Data Length: {data.Length}");
+                                        int offset = 0;
+                                        int datatlength = data.Length;
+                                        this.TcpSender.Send(BitConverter.GetBytes(datatlength));
+                                        Thread.Sleep(100);
+                                        while (true)
+                                        {
+                                            int read = this.TcpSender.Send(data, offset, datatlength - offset, SocketFlags.None);
+                                            offset += read;
+                                            if (read == 0) break;
                                         }
-                                        else this.RaiseMessage("Send Image Timeout!");
-
-                                    }
-                                    else
-                                    {
-                                        this.RaiseMessage("Grabbed Image is Fault!");
+                                        this.RaiseMessage($"Data Length: {offset}");
+                                        byte[] _byteDataLength = BitConverter.GetBytes(data.Length);
+                                        this.TcpSender.Send(_byteDataLength);
+                                        this.RaiseMessage("Send Image Successfuly!");
+                                        this.RaiseMessage("------------------------------------ <<");
                                     }
                                 }
                             }
@@ -279,27 +282,5 @@ namespace Test_Client
             }
             if (count >= 100) new Exception("Closing Running is Timeout!");
         }
-        private List<byte[]> CutData(byte[] data,int buffersize = 1024)
-        {
-            List<byte[]> Cutdata = new List<byte[]>();
-            int count = data.Length / buffersize;
-            int residual = data.Length % buffersize;
-            for(int i = 0;i <= count; i++)
-            {
-                if (i < count)
-                {
-                    byte[] _ = new byte[count];
-                    Array.Copy(data, i * buffersize, _, 0, buffersize);
-                    Cutdata.Add(_);
-                }
-                else
-                {
-                    byte[] _ = new byte[count];
-                    Array.Copy(data, i * buffersize, _, 0, residual);
-                    Cutdata.Add(_);
-                }
-            }
-            return Cutdata;
-        } 
     }
 }
