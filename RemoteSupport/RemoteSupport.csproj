@@ -64,6 +64,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientInfo.cs" />
+    <Compile Include="ClientTcp.cs" />
+    <Compile Include="Delevery.cs" />
     <Compile Include="LImage.cs" />
     <Compile Include="PylonCamera.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

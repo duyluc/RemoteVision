@@ -15,17 +15,9 @@ namespace RemoteSupport
     public class Shipper
     {
         public Dictionary<string, Terminal> Terminals { get; set; }
-        public ClientInfo ClientInfor { get; set; }
-        public ServerInfo ServerInfor { get; set; }
         public Shipper()
         {
             //Nothing
-        }
-
-        public Shipper(ServerInfo _serverInfo)
-        {
-            this.Terminals = new Dictionary<string, Terminal>();
-            this.ServerInfor = _serverInfo;
         }
 
         public Shipper(Dictionary<string,Terminal> terminals)

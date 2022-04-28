@@ -10,17 +10,21 @@ using System.Windows.Forms;
 using RemoteSupport;
 using Basler.Pylon;
 using System.Diagnostics;
+using System.Net;
+using System.Net.Sockets;
+using SupportServer;
 
 namespace Test_ClientVer2
 {
     public partial class ClientMain : Form
     {
-        private Camera mCamera { get; set; }
+        private PylonCamera mCamera { get; set; }
         private string UnitId { get; set; }
         private string SerialNumber { get; set; }
         private Shipper mShipper { get; set; }
         private Terminal OutputImage { get; set; }
         private Stopwatch StopWatch { get; set; }
+        public ClientTcp ClientTcp { get; set; }
 
         public ClientMain()
         {
@@ -38,6 +42,10 @@ namespace Test_ClientVer2
             this.mShipper.AddTerminal(OutputImage);
             this.EnableButton(false);
             this.StopWatch = new Stopwatch();
+            this.ClientTcp = new ClientTcp();
+            ///TCP
+            this.ClientTcp.Connected += ClientTcp_Connected;
+            this.ClientTcp.Disconnected += ClientTcp_Disconnected;
         }
 
         private void ClientMain_FormClosing(object sender, FormClosingEventArgs e)
@@ -98,7 +106,22 @@ namespace Test_ClientVer2
 
         public void EnableButton(bool enable = true)
         {
-            this.btnCapture.Enabled = enable;
+            if (enable)
+            {
+                if (ClientTcp == null) return;
+                if (mCamera == null) return;
+                if (this.ClientTcp.ConnectStatus != ClientTcp.Status.Connected ||
+                    this.mCamera.CameraStatus == PylonCamera.Status.Closeed ||
+                    this.mCamera.GrabStatus == PylonCamera.Status.Started) return;
+            }
+            try
+            {
+                this.btnCapture.Invoke(new Action(() => { this.btnCapture.Enabled = enable; }));
+            }
+            catch
+            {
+                this.btnCapture.Enabled = enable;
+            }
         }
 
         private void btnRefreshLV_Click(object sender, EventArgs e)
@@ -120,7 +143,7 @@ namespace Test_ClientVer2
                 ICameraInfo _selectedCamera = item.Tag as ICameraInfo;
                 try
                 {
-                    this.mCamera = new Camera(_selectedCamera);
+                    this.mCamera = new PylonCamera(_selectedCamera);
                     this.mCamera.ConnectionLost += MCamera_ConnectionLost;
                     this.mCamera.CameraOpened += MCamera_CameraOpened;
                     this.mCamera.CameraClosed += MCamera_CameraClosed;
@@ -203,9 +226,10 @@ namespace Test_ClientVer2
                     LImage outputimage = new LImage(grabResult, this.UnitId, this.SerialNumber);
                     this.OutputImage.SetValue(outputimage);
                     this.Display.Image = outputimage.BitmapImage;
-                    Cognex.VisionPro.CogImage8Grey cogimg = new Cognex.VisionPro.CogImage8Grey(outputimage.BitmapImage);
-                    this.cogDisplay.Image = cogimg;
                 }
+                byte[] senddata = Shipper.ObjectToByteArray(mShipper);
+                this.ClientTcp.SendToServer(senddata);
+                this.lbSendData.Text = $"Send: {senddata.Length} byte";
                 this.StopWatch.Stop();
                 this.ShowStopWatchTime();
             }
@@ -338,6 +362,40 @@ namespace Test_ClientVer2
         public void ShowStopWatchTime()
         {
             this.lbTactTime.Invoke(new Action(() => { this.lbTactTimer.Text = $"Timer: {this.StopWatch.ElapsedMilliseconds} ms"; }));
+        }
+
+        #region TCP
+        private void btnConnect_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string _ipstring = this.tbIPAddress.Text.Split(':')[0];
+                int _port = 0;
+                if (!int.TryParse(this.tbIPAddress.Text.Split(':')[1], out _port)) throw new Exception("Port is invalid");
+                IPEndPoint _serverEnpoint = new IPEndPoint(IPAddress.Parse(_ipstring), _port);
+                this.ClientTcp.ServerEp = _serverEnpoint;
+                this.ClientTcp.Connect();
+            }
+            catch(Exception t)
+            {
+                this.ShowException(t);
+            }
+        }
+        private void ClientTcp_Connected(object sender, EventArgs e)
+        {
+            this.EnableButton(true);
+            this.lbConnectStatus.Text = $"Status: Connected!";
+        }
+        private void ClientTcp_Disconnected(object sender, EventArgs e)
+        {
+            this.EnableButton(false);
+            this.lbConnectStatus.Text = $"Status: Disconnected!";
+        }
+        #endregion
+
+        private void btnDisconnect_Click(object sender, EventArgs e)
+        {
+            this.ClientTcp.Disconnect();
         }
     }
 }

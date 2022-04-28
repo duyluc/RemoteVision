@@ -29,7 +29,6 @@ namespace Test_ClientVer2
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ClientMain));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.Display = new System.Windows.Forms.PictureBox();
@@ -40,20 +39,21 @@ namespace Test_ClientVer2
             this.lbConnectStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.btnConnect = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.tbIPAddress = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.btnRefreshLV = new System.Windows.Forms.Button();
             this.lvCameras = new System.Windows.Forms.ListView();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.lbTactTime = new System.Windows.Forms.StatusStrip();
+            this.lbTactTimer = new System.Windows.Forms.ToolStripStatusLabel();
             this.btnCapture = new System.Windows.Forms.Button();
+            this.probSendImage = new System.Windows.Forms.ToolStripProgressBar();
             this.slHeight = new PylonController.IntSliderUserControl();
             this.slWidth = new PylonController.IntSliderUserControl();
             this.slGain = new PylonController.FloatSliderUserControl();
             this.slExposure = new PylonController.FloatSliderUserControl();
             this.cbImageFormat = new PylonController.EnumerationComboBoxUserControl();
-            this.lbTactTime = new System.Windows.Forms.StatusStrip();
-            this.lbTactTimer = new System.Windows.Forms.ToolStripStatusLabel();
-            this.cogDisplay = new Cognex.VisionPro.Display.CogDisplay();
+            this.lbSendData = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Display)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
@@ -62,18 +62,15 @@ namespace Test_ClientVer2
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
             this.lbTactTime.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.cogDisplay)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.ColumnCount = 3;
+            this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 300F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 574F));
             this.tableLayoutPanel1.Controls.Add(this.Display, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.cogDisplay, 2, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -87,7 +84,7 @@ namespace Test_ClientVer2
             this.Display.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Display.Location = new System.Drawing.Point(303, 3);
             this.Display.Name = "Display";
-            this.Display.Size = new System.Drawing.Size(431, 806);
+            this.Display.Size = new System.Drawing.Size(1005, 806);
             this.Display.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.Display.TabIndex = 0;
             this.Display.TabStop = false;
@@ -115,7 +112,7 @@ namespace Test_ClientVer2
             this.panel1.Controls.Add(this.statusStrip1);
             this.panel1.Controls.Add(this.btnConnect);
             this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.textBox1);
+            this.panel1.Controls.Add(this.tbIPAddress);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
@@ -132,11 +129,13 @@ namespace Test_ClientVer2
             this.btnDisconnect.Size = new System.Drawing.Size(51, 39);
             this.btnDisconnect.TabIndex = 4;
             this.btnDisconnect.UseVisualStyleBackColor = false;
+            this.btnDisconnect.Click += new System.EventHandler(this.btnDisconnect_Click);
             // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lbConnectStatus});
+            this.lbConnectStatus,
+            this.lbSendData});
             this.statusStrip1.Location = new System.Drawing.Point(0, 93);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(288, 22);
@@ -159,6 +158,7 @@ namespace Test_ClientVer2
             this.btnConnect.Size = new System.Drawing.Size(51, 39);
             this.btnConnect.TabIndex = 2;
             this.btnConnect.UseVisualStyleBackColor = false;
+            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
             // 
             // label1
             // 
@@ -170,15 +170,15 @@ namespace Test_ClientVer2
             this.label1.TabIndex = 1;
             this.label1.Text = "IP:";
             // 
-            // textBox1
+            // tbIPAddress
             // 
-            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(52, 14);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(222, 26);
-            this.textBox1.TabIndex = 0;
-            this.textBox1.Text = "127.0.0.1:9999";
-            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.tbIPAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tbIPAddress.Location = new System.Drawing.Point(52, 14);
+            this.tbIPAddress.Name = "tbIPAddress";
+            this.tbIPAddress.Size = new System.Drawing.Size(222, 26);
+            this.tbIPAddress.TabIndex = 0;
+            this.tbIPAddress.Text = "127.0.0.1:9999";
+            this.tbIPAddress.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // panel2
             // 
@@ -228,6 +228,23 @@ namespace Test_ClientVer2
             this.panel3.Size = new System.Drawing.Size(288, 472);
             this.panel3.TabIndex = 2;
             // 
+            // lbTactTime
+            // 
+            this.lbTactTime.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.probSendImage,
+            this.lbTactTimer});
+            this.lbTactTime.Location = new System.Drawing.Point(0, 446);
+            this.lbTactTime.Name = "lbTactTime";
+            this.lbTactTime.Size = new System.Drawing.Size(284, 22);
+            this.lbTactTime.TabIndex = 6;
+            this.lbTactTime.Text = "Timer: 0 ms";
+            // 
+            // lbTactTimer
+            // 
+            this.lbTactTimer.Name = "lbTactTimer";
+            this.lbTactTimer.Size = new System.Drawing.Size(68, 17);
+            this.lbTactTimer.Text = "Timer: 0 ms";
+            // 
             // btnCapture
             // 
             this.btnCapture.BackColor = System.Drawing.Color.Transparent;
@@ -239,6 +256,11 @@ namespace Test_ClientVer2
             this.btnCapture.TabIndex = 5;
             this.btnCapture.UseVisualStyleBackColor = false;
             this.btnCapture.Click += new System.EventHandler(this.btnCapture_Click);
+            // 
+            // probSendImage
+            // 
+            this.probSendImage.Name = "probSendImage";
+            this.probSendImage.Size = new System.Drawing.Size(100, 16);
             // 
             // slHeight
             // 
@@ -284,39 +306,11 @@ namespace Test_ClientVer2
             this.cbImageFormat.Size = new System.Drawing.Size(251, 57);
             this.cbImageFormat.TabIndex = 0;
             // 
-            // lbTactTime
+            // lbSendData
             // 
-            this.lbTactTime.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lbTactTimer});
-            this.lbTactTime.Location = new System.Drawing.Point(0, 446);
-            this.lbTactTime.Name = "lbTactTime";
-            this.lbTactTime.Size = new System.Drawing.Size(284, 22);
-            this.lbTactTime.TabIndex = 6;
-            this.lbTactTime.Text = "Timer: 0 ms";
-            // 
-            // lbTactTimer
-            // 
-            this.lbTactTimer.Name = "lbTactTimer";
-            this.lbTactTimer.Size = new System.Drawing.Size(68, 17);
-            this.lbTactTimer.Text = "Timer: 0 ms";
-            // 
-            // cogDisplay
-            // 
-            this.cogDisplay.ColorMapLowerClipColor = System.Drawing.Color.Black;
-            this.cogDisplay.ColorMapLowerRoiLimit = 0D;
-            this.cogDisplay.ColorMapPredefined = Cognex.VisionPro.Display.CogDisplayColorMapPredefinedConstants.None;
-            this.cogDisplay.ColorMapUpperClipColor = System.Drawing.Color.Black;
-            this.cogDisplay.ColorMapUpperRoiLimit = 1D;
-            this.cogDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cogDisplay.DoubleTapZoomCycleLength = 2;
-            this.cogDisplay.DoubleTapZoomSensitivity = 2.5D;
-            this.cogDisplay.Location = new System.Drawing.Point(740, 3);
-            this.cogDisplay.MouseWheelMode = Cognex.VisionPro.Display.CogDisplayMouseWheelModeConstants.Zoom1;
-            this.cogDisplay.MouseWheelSensitivity = 1D;
-            this.cogDisplay.Name = "cogDisplay";
-            this.cogDisplay.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("cogDisplay.OcxState")));
-            this.cogDisplay.Size = new System.Drawing.Size(568, 806);
-            this.cogDisplay.TabIndex = 2;
+            this.lbSendData.Name = "lbSendData";
+            this.lbSendData.Size = new System.Drawing.Size(71, 17);
+            this.lbSendData.Text = "Send: 0 byte";
             // 
             // ClientMain
             // 
@@ -338,7 +332,6 @@ namespace Test_ClientVer2
             this.panel3.PerformLayout();
             this.lbTactTime.ResumeLayout(false);
             this.lbTactTime.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.cogDisplay)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -350,7 +343,7 @@ namespace Test_ClientVer2
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox tbIPAddress;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel lbConnectStatus;
         private System.Windows.Forms.Button btnConnect;
@@ -367,7 +360,8 @@ namespace Test_ClientVer2
         private System.Windows.Forms.Button btnCapture;
         private System.Windows.Forms.StatusStrip lbTactTime;
         private System.Windows.Forms.ToolStripStatusLabel lbTactTimer;
-        private Cognex.VisionPro.Display.CogDisplay cogDisplay;
+        private System.Windows.Forms.ToolStripProgressBar probSendImage;
+        private System.Windows.Forms.ToolStripStatusLabel lbSendData;
     }
 }
 

@@ -126,9 +126,9 @@ namespace Test_Server
                             }
                             this.RaiseMessage($"Received: {offset} byte");
                             Shipper imageShipper = Shipper.ByteArrayToObject(_data) as Shipper;
-                            CogImage8Grey image = new CogImage8Grey(imageShipper.BitmapImage);
-                            this.cogDisplay.Invoke(new Action(() => { this.cogDisplay.Image = image; }));
-                            this.RaiseMessage($"Device: {imageShipper.UnitID}" + Environment.NewLine + $"Camera: {imageShipper.CameraSerialNumber}");
+                            //CogImage8Grey image = new CogImage8Grey(imageShipper.BitmapImage);
+                            //this.cogDisplay.Invoke(new Action(() => { this.cogDisplay.Image = image; }));
+                            //this.RaiseMessage($"Device: {imageShipper.UnitID}" + Environment.NewLine + $"Camera: {imageShipper.CameraSerialNumber}");
                             this.RaiseMessage("Receive Image Successfully!");
                         }
                         catch(Exception e)
